@@ -1,0 +1,10 @@
+{
+  "liveServer.settings.root": "/javascriptPruefung/src/client",
+  "liveServer.settings.ignoreFiles": [
+    "**/storage/**",
+    "**/*.pdf",
+    "**/*.json",
+    "**/pdfclassifier-api-mock-1_1_0/**"
+  ],
+  "liveServer.settings.wait": 0
+}

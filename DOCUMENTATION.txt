@@ -1,0 +1,14 @@
+1. Docker Starten
+
+cd C:\Users\alios\Desktop\intelligenter-posteingang\pdfclassifier-api-mock-1_1_0
+
+docker-compose up --build
+
+docker compose up -d scanner-latest
+
+
+2. Programm starten
+
+cd C:\Users\alios\Desktop\intelligenter-posteingang\javascriptPruefung\src\server
+
+node index.js
