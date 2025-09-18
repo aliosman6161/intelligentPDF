@@ -1,0 +1,68 @@
+{
+  "docId": "b842ec08-7f08-41a9-b87c-074e6927a6b4",
+  "state": "review",
+  "originalFilename": "0a219fc0-f55f-4b3b-82a9-da8f18b71f25.pdf",
+  "filePath": "storage/review/0a219fc0-f55f-4b3b-82a9-da8f18b71f25.pdf",
+  "createdAt": "2025-09-18T17:23:12.387Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T17:23:12.387Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T17:23:30.995Z",
+      "by": "system",
+      "event": "classified"
+    },
+    {
+      "at": "2025-09-18T17:23:30.996Z",
+      "action": "classify",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T17:23:33.682Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "review",
+      "note": "agg=0.49"
+    }
+  ],
+  "classification": {
+    "fetchedAt": "2025-09-18T17:23:30.995Z",
+    "apiBase": "http://localhost:8080/api/v1",
+    "requestUuid": "0a219fc0-f55f-4b3b-82a9-da8f18b71f25",
+    "result": {
+      "class_id": "8f975425-dce0-4db0-a662-ecffcc288da4",
+      "custom_id": "0a219fc0-f55f-4b3b-82a9-da8f18b71f25",
+      "result": {
+        "kind": "STATEMENT",
+        "doc_id": {
+          "value": ";ET/c1234 5678m9Z?35c3",
+          "score": 0.49
+        },
+        "doc_date_sic": {
+          "value": "<324-11-01",
+          "score": 0.9
+        },
+        "doc_date_parsed": "2024-11-01T00:00:00Z",
+        "doc_subject": {
+          "value": "zoLika4szuc 10B2)",
+          "score": 0.7
+        }
+      }
+    }
+  },
+  "routing": {
+    "policy": "min",
+    "threshold": 0.7,
+    "aggregated_confidence": 0.49,
+    "auto_processed": false,
+    "decided_at": "2025-09-18T17:23:33.682Z",
+    "decided_by": "system"
+  }
+}

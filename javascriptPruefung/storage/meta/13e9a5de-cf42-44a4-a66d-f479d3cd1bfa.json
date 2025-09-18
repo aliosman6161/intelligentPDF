@@ -1,0 +1,68 @@
+{
+  "docId": "13e9a5de-cf42-44a4-a66d-f479d3cd1bfa",
+  "state": "review",
+  "originalFilename": "54580df7-e3e8-4e3b-8cda-22dc9357f735.pdf",
+  "filePath": "storage/review/54580df7-e3e8-4e3b-8cda-22dc9357f735.pdf",
+  "createdAt": "2025-09-18T17:23:06.383Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T17:23:06.383Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T17:23:31.007Z",
+      "by": "system",
+      "event": "classified"
+    },
+    {
+      "at": "2025-09-18T17:23:31.008Z",
+      "action": "classify",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T17:23:33.689Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "review",
+      "note": "agg=0.49"
+    }
+  ],
+  "classification": {
+    "fetchedAt": "2025-09-18T17:23:31.007Z",
+    "apiBase": "http://localhost:8080/api/v1",
+    "requestUuid": "54580df7-e3e8-4e3b-8cda-22dc9357f735",
+    "result": {
+      "class_id": "9af1ec76-547f-49cd-9d69-b6dd4d255bcb",
+      "custom_id": "54580df7-e3e8-4e3b-8cda-22dc9357f735",
+      "result": {
+        "kind": "LETTER",
+        "doc_id": {
+          "value": "Wa@Eer)",
+          "score": 0.49
+        },
+        "doc_date_sic": {
+          "value": "-0th^DB-10",
+          "score": 0.49
+        },
+        "doc_date_parsed": "2024-11-10T00:00:00Z",
+        "doc_subject": {
+          "value": "RaKderfremnGeOBGrqCsI;GGladbach",
+          "score": 0.7
+        }
+      }
+    }
+  },
+  "routing": {
+    "policy": "min",
+    "threshold": 0.7,
+    "aggregated_confidence": 0.49,
+    "auto_processed": false,
+    "decided_at": "2025-09-18T17:23:33.689Z",
+    "decided_by": "system"
+  }
+}

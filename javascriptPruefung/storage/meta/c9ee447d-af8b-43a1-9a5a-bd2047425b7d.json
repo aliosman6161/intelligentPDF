@@ -1,0 +1,77 @@
+{
+  "docId": "c9ee447d-af8b-43a1-9a5a-bd2047425b7d",
+  "state": "processed",
+  "originalFilename": "f8e5a3b6-e28b-4c2f-a440-c18bd1407a22.pdf",
+  "filePath": "storage/processed/f8e5a3b6-e28b-4c2f-a440-c18bd1407a22.pdf",
+  "createdAt": "2025-09-18T17:22:42.385Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T17:22:42.388Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T17:23:03.011Z",
+      "by": "system",
+      "event": "classified"
+    },
+    {
+      "at": "2025-09-18T17:23:03.012Z",
+      "action": "classify",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T17:23:20.221Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "processed",
+      "note": "agg=0.7"
+    },
+    {
+      "at": "2025-09-18T17:23:20.223Z",
+      "action": "auto_route",
+      "from": "inbox",
+      "to": "processed",
+      "by": "admin",
+      "threshold": 0.7
+    }
+  ],
+  "classification": {
+    "fetchedAt": "2025-09-18T17:23:03.011Z",
+    "apiBase": "http://localhost:8080/api/v1",
+    "requestUuid": "f8e5a3b6-e28b-4c2f-a440-c18bd1407a22",
+    "result": {
+      "class_id": "a83b7ec8-db82-427c-893a-c685cfa23afa",
+      "custom_id": "f8e5a3b6-e28b-4c2f-a440-c18bd1407a22",
+      "result": {
+        "kind": "STATEMENT",
+        "doc_id": {
+          "value": "DE9B [234 56+8 9123 87",
+          "score": 0.79
+        },
+        "doc_date_sic": {
+          "value": "2025-02-O1",
+          "score": 0.9
+        },
+        "doc_date_parsed": "2025-02-01T00:00:00Z",
+        "doc_subject": {
+          "value": "o{ntoauszUg 1,25",
+          "score": 0.7
+        }
+      }
+    }
+  },
+  "routing": {
+    "policy": "min",
+    "threshold": 0.7,
+    "aggregated_confidence": 0.7,
+    "auto_processed": true,
+    "decided_at": "2025-09-18T17:23:20.221Z",
+    "decided_by": "system"
+  },
+  "classification_mode": "auto"
+}

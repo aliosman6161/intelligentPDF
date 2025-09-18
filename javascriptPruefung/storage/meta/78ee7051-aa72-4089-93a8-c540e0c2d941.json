@@ -1,0 +1,17 @@
+{
+  "docId": "78ee7051-aa72-4089-93a8-c540e0c2d941",
+  "state": "inbox",
+  "originalFilename": "2a8be83f-d6a4-4e4c-82c9-08d0cf941335.pdf",
+  "filePath": "storage/inbox/2a8be83f-d6a4-4e4c-82c9-08d0cf941335.pdf",
+  "createdAt": "2025-09-18T17:24:30.444Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T17:24:30.444Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    }
+  ]
+}

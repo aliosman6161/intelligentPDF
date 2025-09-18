@@ -55,3 +55,15 @@
 {"at":"2025-09-18T15:57:38.525Z","docId":"a01339e8-3376-4c4c-a1d7-efbb0e78b0ba","action":"classify","by":"admin"}
 {"at":"2025-09-18T15:57:38.535Z","docId":"1779020b-d5c9-4494-a21a-0fcc0f52ef40","action":"classify","by":"admin"}
 {"at":"2025-09-18T15:57:56.962Z","docId":"bdfdc359-b3cd-46c3-9ff6-6fcc5a233503","action":"corrections","by":"admin"}
+{"at":"2025-09-18T17:23:02.981Z","docId":"82bcf0d1-1b6b-4e24-a8d3-981dc4cca1f2","action":"classify","by":"admin"}
+{"at":"2025-09-18T17:23:02.995Z","docId":"bf480df0-b5f7-469d-9ede-4eadb0d5563c","action":"classify","by":"admin"}
+{"at":"2025-09-18T17:23:03.013Z","docId":"c9ee447d-af8b-43a1-9a5a-bd2047425b7d","action":"classify","by":"admin"}
+{"at":"2025-09-18T17:23:03.027Z","docId":"b3fcf429-0950-49f2-80c9-4a9e1f358536","action":"classify","by":"admin"}
+{"at":"2025-09-18T17:23:20.225Z","docId":"c9ee447d-af8b-43a1-9a5a-bd2047425b7d","action":"auto_route","from":"inbox","to":"processed","by":"admin","threshold":0.7}
+{"at":"2025-09-18T17:23:30.964Z","docId":"e1ced655-3b41-43a5-97e8-0e9dd43c1fd6","action":"classify","by":"admin"}
+{"at":"2025-09-18T17:23:30.983Z","docId":"160bf031-338a-49aa-98ea-6ee875e2178e","action":"classify","by":"admin"}
+{"at":"2025-09-18T17:23:30.996Z","docId":"b842ec08-7f08-41a9-b87c-074e6927a6b4","action":"classify","by":"admin"}
+{"at":"2025-09-18T17:23:31.009Z","docId":"13e9a5de-cf42-44a4-a66d-f479d3cd1bfa","action":"classify","by":"admin"}
+{"at":"2025-09-18T17:23:31.031Z","docId":"276c2267-0bbe-4a7d-8e8e-17378b4230e3","action":"classify","by":"admin"}
+{"at":"2025-09-18T17:23:31.044Z","docId":"7a78de2b-4e23-4973-abaf-a0048a332fd6","action":"classify","by":"admin"}
+{"at":"2025-09-18T17:23:33.697Z","docId":"276c2267-0bbe-4a7d-8e8e-17378b4230e3","action":"auto_route","from":"inbox","to":"processed","by":"admin","threshold":0.7}

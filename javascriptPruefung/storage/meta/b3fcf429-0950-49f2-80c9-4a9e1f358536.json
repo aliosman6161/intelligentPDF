@@ -1,0 +1,68 @@
+{
+  "docId": "b3fcf429-0950-49f2-80c9-4a9e1f358536",
+  "state": "review",
+  "originalFilename": "3ebed8f0-15df-4803-a720-8de7d07d3d36.pdf",
+  "filePath": "storage/review/3ebed8f0-15df-4803-a720-8de7d07d3d36.pdf",
+  "createdAt": "2025-09-18T17:19:39.226Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T17:19:39.230Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T17:23:03.026Z",
+      "by": "system",
+      "event": "classified"
+    },
+    {
+      "at": "2025-09-18T17:23:03.027Z",
+      "action": "classify",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T17:23:20.238Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "review",
+      "note": "agg=0.2"
+    }
+  ],
+  "classification": {
+    "fetchedAt": "2025-09-18T17:23:03.026Z",
+    "apiBase": "http://localhost:8080/api/v1",
+    "requestUuid": "3ebed8f0-15df-4803-a720-8de7d07d3d36",
+    "result": {
+      "class_id": "76ec61bc-5419-4332-9a3a-ce0522ad8575",
+      "custom_id": "3ebed8f0-15df-4803-a720-8de7d07d3d36",
+      "result": {
+        "kind": "LETTER",
+        "doc_id": {
+          "value": "$yltWiDD",
+          "score": 0.39
+        },
+        "doc_date_sic": {
+          "value": "2)GK-T;[0*",
+          "score": 0.39
+        },
+        "doc_date_parsed": "2024-10-01T00:00:00Z",
+        "doc_subject": {
+          "value": "Lsqem%fl57n-ba5+=!",
+          "score": 0.2
+        }
+      }
+    }
+  },
+  "routing": {
+    "policy": "min",
+    "threshold": 0.7,
+    "aggregated_confidence": 0.2,
+    "auto_processed": false,
+    "decided_at": "2025-09-18T17:23:20.238Z",
+    "decided_by": "system"
+  }
+}
