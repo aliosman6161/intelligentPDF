@@ -1,0 +1,59 @@
+{
+  "docId": "94eb1164-db59-4f35-9401-01eb1ef907bc",
+  "state": "hold",
+  "originalFilename": "941075f7-2146-4514-9d69-941b3e6e4913.pdf",
+  "filePath": "storage/hold/941075f7-2146-4514-9d69-941b3e6e4913.pdf",
+  "createdAt": "2025-09-18T20:40:48.893Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T20:40:48.893Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T20:40:50.189Z",
+      "by": "system",
+      "event": "classified"
+    },
+    {
+      "at": "2025-09-18T20:40:50.191Z",
+      "action": "classify",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T20:40:54.476Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "hold"
+    }
+  ],
+  "classification": {
+    "fetchedAt": "2025-09-18T20:40:50.189Z",
+    "apiBase": "http://localhost:8080/api/v1",
+    "requestUuid": "941075f7-2146-4514-9d69-941b3e6e4913",
+    "result": {
+      "class_id": "5de62a7d-a18d-4793-bffb-28c607a27905",
+      "custom_id": "941075f7-2146-4514-9d69-941b3e6e4913",
+      "result": {
+        "kind": "INVOICE",
+        "doc_id": {
+          "value": "DLP126",
+          "score": 0.69
+        },
+        "doc_date_sic": {
+          "value": "x{)dU05q13",
+          "score": 0.5
+        },
+        "doc_date_parsed": "2025-03-13T00:00:00Z",
+        "doc_subject": {
+          "value": "]hrwiinkWx, %=e2+n C{nk",
+          "score": 0.6
+        }
+      }
+    }
+  }
+}

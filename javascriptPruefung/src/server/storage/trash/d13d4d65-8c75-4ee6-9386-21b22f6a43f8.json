@@ -1,0 +1,36 @@
+{
+  "docId": "d13d4d65-8c75-4ee6-9386-21b22f6a43f8",
+  "state": "trash",
+  "originalFilename": "284ee71f-6a3c-4f9f-bd84-7f0cb11ca719.pdf",
+  "filePath": "src/server/storage/trash/284ee71f-6a3c-4f9f-bd84-7f0cb11ca719.pdf",
+  "createdAt": "2025-09-18T20:57:08.009Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T20:57:08.009Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T20:57:32.815Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "review"
+    },
+    {
+      "at": "2025-09-18T20:57:47.480Z",
+      "by": "system",
+      "event": "moved",
+      "from": "review",
+      "to": "trash"
+    }
+  ],
+  "trash": {
+    "markedAt": "2025-09-18T20:57:47.480Z",
+    "deleteAfter": "2025-09-25T20:57:47.480Z",
+    "markedBy": "system"
+  }
+}

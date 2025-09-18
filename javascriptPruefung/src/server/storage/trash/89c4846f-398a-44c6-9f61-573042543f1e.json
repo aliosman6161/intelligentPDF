@@ -1,0 +1,52 @@
+{
+  "docId": "89c4846f-398a-44c6-9f61-573042543f1e",
+  "state": "trash",
+  "originalFilename": "Anwendung aus PDF erstellen.pdf",
+  "filePath": "src/server/storage/trash/Anwendung aus PDF erstellen.pdf",
+  "createdAt": "2025-09-18T20:56:43.532Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T20:56:43.532Z",
+      "by": "system",
+      "event": "moved",
+      "from": "upload",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T20:56:48.544Z",
+      "by": "system",
+      "event": "corrections_saved"
+    },
+    {
+      "at": "2025-09-18T20:56:48.545Z",
+      "action": "corrections",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T20:57:32.767Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "review"
+    },
+    {
+      "at": "2025-09-18T20:57:47.535Z",
+      "by": "system",
+      "event": "moved",
+      "from": "review",
+      "to": "trash"
+    }
+  ],
+  "corrections": {
+    "kind": "fsdf",
+    "doc_id": "dsf"
+  },
+  "correctedAt": "2025-09-18T20:56:48.544Z",
+  "correctedBy": "system",
+  "trash": {
+    "markedAt": "2025-09-18T20:57:47.535Z",
+    "deleteAfter": "2025-09-25T20:57:47.535Z",
+    "markedBy": "system"
+  }
+}

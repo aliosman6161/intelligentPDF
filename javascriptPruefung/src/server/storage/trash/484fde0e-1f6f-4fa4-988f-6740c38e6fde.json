@@ -1,0 +1,44 @@
+{
+  "docId": "484fde0e-1f6f-4fa4-988f-6740c38e6fde",
+  "state": "trash",
+  "originalFilename": "bd49ffc1-e77f-4c0b-aa61-545dce3e6712.pdf",
+  "filePath": "src/server/storage/trash/bd49ffc1-e77f-4c0b-aa61-545dce3e6712.pdf",
+  "createdAt": "2025-09-18T21:04:53.877Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T21:04:53.877Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T21:05:33.722Z",
+      "by": "system",
+      "event": "corrections_saved"
+    },
+    {
+      "at": "2025-09-18T21:05:33.723Z",
+      "action": "corrections",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T21:05:55.994Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "trash"
+    }
+  ],
+  "corrections": {
+    "kind": "dfgdfgf"
+  },
+  "correctedAt": "2025-09-18T21:05:33.722Z",
+  "correctedBy": "system",
+  "trash": {
+    "markedAt": "2025-09-18T21:05:55.994Z",
+    "deleteAfter": "2025-09-25T21:05:55.994Z",
+    "markedBy": "system"
+  }
+}

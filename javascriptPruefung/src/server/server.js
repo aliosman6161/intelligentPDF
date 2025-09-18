@@ -25,7 +25,7 @@ const PROCESSED_DIR = process.env.PROCESSED_DIR || path.resolve(__dirname, "../.
 const REVIEW_DIR    = process.env.REVIEW_DIR    || path.resolve(__dirname, "../../storage/review");
 const HOLD_DIR      = process.env.HOLD_DIR      || path.resolve(__dirname, "../../storage/hold");
 const TRASH_DIR     = process.env.TRASH_DIR     || path.resolve(__dirname, "././storage/trash");
-const TRASH_RETENTION_DAYS = Number(process.env.TRASH_RETENTION_DAYS || 14);
+const TRASH_RETENTION_DAYS = Number(process.env.TRASH_RETENTION_DAYS || 7);
 
 
 

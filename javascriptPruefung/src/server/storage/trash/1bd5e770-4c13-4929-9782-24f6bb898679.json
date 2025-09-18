@@ -1,0 +1,87 @@
+{
+  "docId": "1bd5e770-4c13-4929-9782-24f6bb898679",
+  "state": "trash",
+  "originalFilename": "74977202-b103-46df-962a-217513284715.pdf",
+  "filePath": "src/server/storage/trash/74977202-b103-46df-962a-217513284715 (1).pdf",
+  "createdAt": "2025-09-18T20:56:49.961Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T20:56:49.961Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T20:56:51.663Z",
+      "by": "system",
+      "event": "classified"
+    },
+    {
+      "at": "2025-09-18T20:56:51.664Z",
+      "action": "classify",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T20:57:15.121Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "review",
+      "note": "agg=0.4"
+    },
+    {
+      "at": "2025-09-18T20:57:32.739Z",
+      "by": "system",
+      "event": "moved",
+      "from": "review",
+      "to": "review"
+    },
+    {
+      "at": "2025-09-18T20:57:47.509Z",
+      "by": "system",
+      "event": "moved",
+      "from": "review",
+      "to": "trash"
+    }
+  ],
+  "classification": {
+    "fetchedAt": "2025-09-18T20:56:51.663Z",
+    "apiBase": "http://localhost:8080/api/v1",
+    "requestUuid": "74977202-b103-46df-962a-217513284715",
+    "result": {
+      "class_id": "ee672575-bdd9-4d96-8ef6-008b94d2f0ae",
+      "custom_id": "74977202-b103-46df-962a-217513284715",
+      "result": {
+        "kind": "INVOICE",
+        "doc_id": {
+          "value": "DCC%N{",
+          "score": 0.49
+        },
+        "doc_date_sic": {
+          "value": "-0*5a0h.11",
+          "score": 0.4
+        },
+        "doc_date_parsed": "2025-01-11T00:00:00Z",
+        "doc_subject": {
+          "value": "bhrHZYq^auW>tielEn ,an;",
+          "score": 0.4
+        }
+      }
+    }
+  },
+  "routing": {
+    "policy": "min",
+    "threshold": 0.7,
+    "aggregated_confidence": 0.4,
+    "auto_processed": false,
+    "decided_at": "2025-09-18T20:57:15.121Z",
+    "decided_by": "system"
+  },
+  "trash": {
+    "markedAt": "2025-09-18T20:57:47.509Z",
+    "deleteAfter": "2025-09-25T20:57:47.509Z",
+    "markedBy": "system"
+  }
+}

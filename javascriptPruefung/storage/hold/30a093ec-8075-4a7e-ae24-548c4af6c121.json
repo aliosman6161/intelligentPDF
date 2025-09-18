@@ -1,0 +1,75 @@
+{
+  "docId": "30a093ec-8075-4a7e-ae24-548c4af6c121",
+  "state": "hold",
+  "originalFilename": "89b6b1b4-eea1-4bf9-821d-d5dc74831d12.pdf",
+  "filePath": "storage/hold/89b6b1b4-eea1-4bf9-821d-d5dc74831d12.pdf",
+  "createdAt": "2025-09-18T21:03:29.670Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T21:03:29.670Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T21:03:31.673Z",
+      "by": "system",
+      "event": "classified"
+    },
+    {
+      "at": "2025-09-18T21:03:31.675Z",
+      "action": "classify",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T21:03:33.661Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "review",
+      "note": "agg=0.6"
+    },
+    {
+      "at": "2025-09-18T21:04:18.385Z",
+      "by": "system",
+      "event": "moved",
+      "from": "review",
+      "to": "hold"
+    }
+  ],
+  "classification": {
+    "fetchedAt": "2025-09-18T21:03:31.673Z",
+    "apiBase": "http://localhost:8080/api/v1",
+    "requestUuid": "89b6b1b4-eea1-4bf9-821d-d5dc74831d12",
+    "result": {
+      "class_id": "1cc091fd-676c-4b74-9a1c-334936b66e38",
+      "custom_id": "89b6b1b4-eea1-4bf9-821d-d5dc74831d12",
+      "result": {
+        "kind": "INVOICE",
+        "doc_id": {
+          "value": "DOC625",
+          "score": 0.79
+        },
+        "doc_date_sic": {
+          "value": "70E'WV3-1P",
+          "score": 0.6
+        },
+        "doc_date_parsed": "2025-03-13T00:00:00Z",
+        "doc_subject": {
+          "value": "IEr Qinkau4bvielyn Denk",
+          "score": 0.7
+        }
+      }
+    }
+  },
+  "routing": {
+    "policy": "min",
+    "threshold": 0.7,
+    "aggregated_confidence": 0.6,
+    "auto_processed": false,
+    "decided_at": "2025-09-18T21:03:33.661Z",
+    "decided_by": "system"
+  }
+}

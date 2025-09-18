@@ -90,6 +90,40 @@
 
 
 
+
+
+
+
+
+
+  // Mehrfachauswahl pro Tab
+  const selectedIds = {
+    inbox: new Set(),
+    review: new Set(),
+    hold: new Set(),
+    processed: new Set(),
+    trash: new Set(),
+  };
+
+  function getSelection(state) {
+    return Array.from(selectedIds[state] || []);
+  }
+  function clearSelection(state) {
+    (selectedIds[state] || new Set()).clear();
+  }
+  function toggleSelection(state, docId, checked) {
+    const set = selectedIds[state] || new Set();
+    if (checked) set.add(docId); else set.delete(docId);
+    selectedIds[state] = set;
+  }
+
+
+
+
+
+
+
+
   // --- helpers ---
   function qs(sel, el=document){ return el.querySelector(sel); }
   function fmtDate(iso){
@@ -210,10 +244,17 @@
       card.className = "item";
       card.tabIndex = 0;
       card.dataset.docId = it.docId;
+
+      const isChecked = selectedIds[state]?.has?.(it.docId);
       card.innerHTML = `
+        <label class="sel">
+          <input type="checkbox" class="selbox" data-docid="${it.docId}" ${isChecked ? "checked" : ""} />
+        </label>
         <p class="title" title="${it.originalFilename || ""}">${it.originalFilename || "—"}</p>
         <p class="meta">${fmtDate(it.createdAt)} · ${it.docId}</p>
       `;
+      if (isChecked) card.classList.add("bulk-selected");
+
       list.appendChild(card);
     }
   }
@@ -360,37 +401,24 @@
         qs("#btn-to-review", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
-            const nextId = pickNextId("inbox", docId);
-            const updated = await routeTo(docId, "review");
-            updateCachesAfterRoute(updated, "inbox", "review");
-            // im Quell-Tab (Inbox) bleiben und nächstes öffnen
-            await loadState("inbox", nextId, { force:true });
-
-          } catch(e){
-            alert("Verschieben nach Review fehlgeschlagen: " + String(e?.message || e));
+            await applyRouteToSelectionOrSingle(state, docId, "review", meta);
           } finally {
             disableActionButtons(false);
           }
         });
+
 
 
         // Inbox/Review → Processed
         qs("#btn-to-processed", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
-            const from = meta.state || "inbox";
-            const nextId = pickNextId(from, docId);
-            const updated = await routeTo(docId, "processed");
-            updateCachesAfterRoute(updated, from, "processed");
-            // im Quell-Tab bleiben und nächstes öffnen
-            await loadState(from, nextId, { force:true });
-
-          } catch(e){
-            alert("Verschieben nach Processed fehlgeschlagen: " + String(e?.message || e));
+            await applyRouteToSelectionOrSingle(state, docId, "processed", meta);
           } finally {
             disableActionButtons(false);
           }
         });
+
 
         // Einzel-Klassifizieren (nur Inbox)
         qs("#btn-classify-one", detail)?.addEventListener("click", async () => {
@@ -430,58 +458,35 @@
         qs("#btn-to-hold", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
-            const from = meta.state || "inbox";
-            const nextId = pickNextId(from, docId);
-            const updated = await routeTo(docId, "hold");
-            updateCachesAfterRoute(updated, from, "hold");
-            // im Quell-Tab bleiben und nächstes öffnen
-            await loadState(from, nextId, { force:true });
-            toast("Verschoben nach Hold.", "success");
-
-            toast("Verschoben nach Hold.", "success");
-          } catch(e){
-            toast("Verschieben nach Hold fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
+            await applyRouteToSelectionOrSingle(state, docId, "hold", meta);
           } finally {
             disableActionButtons(false);
           }
         });
+
 
         // Hold → Inbox (Release)
         qs("#btn-back-inbox", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
-            const nextId = pickNextId("hold", docId);
-            const updated = await routeTo(docId, "review");
-            updateCachesAfterRoute(updated, "hold", "review");
-            // im Quell-Tab (Hold) bleiben und nächstes öffnen
-            await loadState("hold", nextId, { force:true });
-            toast("Zurück in die review verschoben.", "success");
-
-          } catch(e){
-            toast("Zurückschieben in review fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
+            await applyRouteToSelectionOrSingle(state, docId, "review", meta);
           } finally {
             disableActionButtons(false);
           }
         });
+
 
 
         // Inbox/Review/Hold → Trash (Löschen vormerken)
         qs("#btn-to-trash", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
-            const from = meta.state || "inbox";
-            const nextId = pickNextId(from, docId);
-            const updated = await routeTo(docId, "trash");
-            updateCachesAfterRoute(updated, from, "trash");
-            // im Quell-Tab bleiben und nächstes öffnen
-            await loadState(from, nextId, { force:true });
-            toast("Zur Löschung vorgemerkt (Trash).", "success");
-          } catch(e){
-            toast("Vormerken fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
+            await applyRouteToSelectionOrSingle(state, docId, "trash", meta);
           } finally {
             disableActionButtons(false);
           }
         });
+
 
 
 
@@ -489,18 +494,12 @@
         qs("#btn-restore-inbox", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
-            const nextId = pickNextId("trash", docId);
-            const updated = await routeTo(docId, "inbox");
-            updateCachesAfterRoute(updated, "trash", "inbox");
-            // im Trash-Tab bleiben und nächstes öffnen
-            await loadState("trash", nextId, { force:true });
-            toast("Wiederhergestellt nach Inbox.", "success");
-          } catch(e){
-            toast("Wiederherstellen fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
+            await applyRouteToSelectionOrSingle(state, docId, "inbox", meta);
           } finally {
             disableActionButtons(false);
           }
         });
+
 
 
 
@@ -773,6 +772,48 @@
     return { ok, fail, skipped, total: ids.length };
   }
 
+
+
+
+
+  // Wendet eine Route-Aktion auf die aktuelle Auswahl an – oder auf das einzelne Dokument
+  async function applyRouteToSelectionOrSingle(state, docId, to, meta) {
+    const sel = getSelection(state);
+
+    // Fall A: Auswahl vorhanden → Batch
+    if (sel.length > 0) {
+      if (!confirm(`Ausgewählte Dokumente nach "${to}" verschieben?\n(${sel.length})`)) return;
+
+      let ok = 0, fail = 0;
+      for (const id of sel) {
+        try {
+          const updated = await routeTo(id, to);
+          updateCachesAfterRoute(updated, state, to);
+          ok++;
+        } catch (e) {
+          fail++;
+        }
+      }
+      clearSelection(state);
+      await loadState(state, null, { force: true });
+      alert(`Verschoben nach "${to}": ${ok} ok, ${fail} Fehler.`);
+      return;
+    }
+
+    // Fall B: keine Auswahl → Einzelverhalten wie bisher
+    const from = meta?.state || state;
+    const nextId = pickNextId(from, docId);
+    const updated = await routeTo(docId, to);
+    updateCachesAfterRoute(updated, from, to);
+    await loadState(from, nextId, { force: true });
+  }
+
+
+
+
+
+
+
   // --- events ---
   tabs.forEach(t => {
     t.addEventListener('click', async () => {
@@ -790,10 +831,21 @@
   for (const state of states){
     const { list, refresh } = ui[state];
     list.addEventListener("click", (e) => {
+      // 1) Checkbox-Klick? → Auswahl toggeln, nicht Detail öffnen
+      const cb = e.target.closest("input.selbox");
+      if (cb) {
+        const id = cb.getAttribute("data-docid");
+        toggleSelection(state, id, cb.checked);
+        const card = cb.closest(".item");
+        if (card) card.classList.toggle("bulk-selected", cb.checked);
+        return;
+      }
+      // 2) Normaler Klick → Detail öffnen
       const card = e.target.closest(".item");
       if (!card) return;
       selectItem(state, card.dataset.docId);
     });
+
     list.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         const card = e.target.closest(".item");
