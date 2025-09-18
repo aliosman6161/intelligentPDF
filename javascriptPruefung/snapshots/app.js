@@ -40,7 +40,8 @@
 
   const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
   const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
-  const states = ["inbox","review","hold","processed"];
+  const states = ["inbox","review","hold","processed","trash"];
+
 
 
   const ui = {
@@ -63,18 +64,30 @@
     },
     processed:{
       list: qs("#processed-list"), empty: qs("#processed-empty"), detail: qs("#processed-detail"), refresh: qs("#refresh-processed"), search: qs("#search-processed")
+    },
+    trash: {
+      panel:   qs("#panel-trash"),
+      list:    qs("#trash-list"),
+      empty:   qs("#trash-empty"),
+      detail:  qs("#trash-detail"),
+      refresh: qs("#refresh-trash"),
+      search:  qs("#search-trash"),
     }
+
   };
 
 
   // In-Memory Cache
   const cache = {
-    inbox:    { items: [], loaded: false },
-    review:   { items: [], loaded: false },
-    hold:     { items: [], loaded: false },
-    processed:{ items: [], loaded: false },
+    inbox:     { loaded:false, items:[] },
+    review:    { loaded:false, items:[] },
+    hold:      { loaded:false, items:[] },
+    processed: { loaded:false, items:[] },
+    trash:     { loaded:false, items:[] },
   };
-  const selected = { inbox: null, review: null, hold: null, processed: null };
+
+  const selected = { inbox:null, review:null, hold:null, processed:null, trash:null };
+
 
 
   // --- helpers ---
@@ -215,8 +228,9 @@
     try{
       const meta = await fetchMeta(docId);
       const inner = getInnerResult(meta?.classification);
-      const scores = collectScores(inner);
-      const aggMin = minScore(scores);
+      const scoreList = collectScores(inner);
+      const aggMin = minScore(scoreList);
+
       const scoreBadge = (aggMin == null)
         ? `<span class="badge muted">keine Klassifizierung</span>`
         : `<span class="badge ${aggMin >= 0.7 ? 'good' : 'warn'}">min-confidence: ${aggMin.toFixed(2)}</span>`;
@@ -230,6 +244,17 @@
         doc_date_parsed: meta.corrections?.doc_date_parsed ?? inner?.doc_date_parsed ?? "",
         doc_subject: meta.corrections?.doc_subject ?? inner?.doc_subject?.value ?? "",
       };
+      
+      // KI-Scores + optionale Overrides aus corrections
+      const fieldScores = {
+        doc_id: typeof inner?.doc_id?.score === "number" ? inner.doc_id.score : null,
+        doc_date_sic: typeof inner?.doc_date_sic?.score === "number" ? inner.doc_date_sic.score : null,
+        doc_subject: typeof inner?.doc_subject?.score === "number" ? inner.doc_subject.score : null,
+      };
+
+      const overrides = meta.corrections?.conf_overrides || {};
+
+
       const raw = {
         kind: inner?.kind ?? "",
         doc_id: inner?.doc_id?.value ?? "",
@@ -239,7 +264,7 @@
       };
 
       const canEdit = meta.state !== "processed"; // Review: edit erlaubt; Processed: read-only
-      const canClassifySingle = meta.state === "inbox";
+      const canClassifySingle = meta.state === "inbox" || meta.state === "review" || meta.state === "hold";
       const canAutoRouteSingle = meta.state === "inbox" && Boolean(inner);
 
       const renderView = () => {
@@ -254,6 +279,7 @@
             <button id="btn-to-review" class="icon-btn small">→ Review</button>
             <button id="btn-to-hold" class="icon-btn small">→ Hold</button>
             <button id="btn-to-processed" class="icon-btn small primary">→ Processed</button>
+            <button id="btn-to-trash" class="icon-btn small danger">→ Löschen vormerken</button>
             ${autoRouteBtn}
             ${editBtn}
           `;
@@ -261,11 +287,18 @@
           rightButtons = `
             <button id="btn-to-hold" class="icon-btn small">→ Hold</button>
             <button id="btn-to-processed" class="icon-btn small primary">→ Processed</button>
+            <button id="btn-to-trash" class="icon-btn small danger">→ Löschen vormerken</button>
             ${editBtn}
           `;
         } else if (meta.state === "hold") {
           rightButtons = `
+            <button id="btn-to-trash" class="icon-btn small danger">→ Löschen vormerken</button>
             <button id="btn-back-inbox" class="icon-btn small">← Zurück in Review</button>
+          `;
+        } else if (meta.state === "trash") {
+          rightButtons = `
+            <button id="btn-restore-inbox" class="icon-btn small">← Wiederherstellen (Inbox)</button>
+            <!-- „Endgültig löschen“ kommt im nächsten Schritt mit Server-Endpoint -->
           `;
         } else {
           rightButtons = ``; // processed
@@ -289,6 +322,8 @@
               <div class="kv"><span>Status</span><b>${meta.state}</b> ${scoreBadge}</div>
               <div class="kv"><span>Datei</span><span title="${meta.originalFilename || ""}">${meta.originalFilename || "—"}</span></div>
               <div class="kv"><span>Eingang</span><span>${fmtDate(meta.createdAt)}</span></div>
+              ${meta.state === "trash" && meta.trash?.deleteAfter ? `<div class="kv"><span>Geplante Löschung</span><span>${fmtDate(meta.trash.deleteAfter)}</span></div>` : ``}
+
 
               <div class="section-title-row">
                 <h3 class="section-title">Werte (gültig)</h3>
@@ -302,6 +337,19 @@
               ${renderInlineValueRow("date (sic)", eff.doc_date_sic, raw.doc_date_sic)}
               ${renderInlineValueRow("date (parsed)", eff.doc_date_parsed, raw.doc_date_parsed)}
               ${renderInlineValueRow("subject", eff.doc_subject, raw.doc_subject)}
+
+
+
+              <div class="section-title-row" style="margin-top:10px;">
+                <h3 class="section-title">Confidence (KI)</h3>
+              </div>
+              <div class="kv"><span>doc_id.score</span><span>${formatScore(overrides.doc_id_score, fieldScores.doc_id)}</span></div>
+              <div class="kv"><span>doc_date_sic.score</span><span>${formatScore(overrides.doc_date_sic_score, fieldScores.doc_date_sic)}</span></div>
+              <div class="kv"><span>doc_subject.score</span><span>${formatScore(overrides.doc_subject_score, fieldScores.doc_subject)}</span></div>
+
+
+
+
             </div>
           </div>
         `;
@@ -312,10 +360,12 @@
         qs("#btn-to-review", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
+            const nextId = pickNextId("inbox", docId);
             const updated = await routeTo(docId, "review");
             updateCachesAfterRoute(updated, "inbox", "review");
-            activateTab("review");
-            await loadState("review", updated.docId, { force:true });
+            // im Quell-Tab (Inbox) bleiben und nächstes öffnen
+            await loadState("inbox", nextId, { force:true });
+
           } catch(e){
             alert("Verschieben nach Review fehlgeschlagen: " + String(e?.message || e));
           } finally {
@@ -329,10 +379,12 @@
           try{
             disableActionButtons(true);
             const from = meta.state || "inbox";
+            const nextId = pickNextId(from, docId);
             const updated = await routeTo(docId, "processed");
             updateCachesAfterRoute(updated, from, "processed");
-            activateTab("processed");
-            await loadState("processed", updated.docId, { force:true });
+            // im Quell-Tab bleiben und nächstes öffnen
+            await loadState(from, nextId, { force:true });
+
           } catch(e){
             alert("Verschieben nach Processed fehlgeschlagen: " + String(e?.message || e));
           } finally {
@@ -357,11 +409,13 @@
         qs("#btn-autoroute-one", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
+            const nextId = pickNextId("inbox", docId);
             await autoRouteOne(docId, 0.7);
             const updated = await fetchMeta(docId);
             updateCachesAfterRoute(updated, "inbox", updated.state);
-            activateTab(updated.state);
-            await loadState(updated.state, updated.docId, { force:true });
+            // in Inbox bleiben und nächstes öffnen
+            await loadState("inbox", nextId, { force:true });
+
           } catch(e){
             alert("Auto-Routen fehlgeschlagen: " + String(e?.message || e));
           } finally {
@@ -377,10 +431,13 @@
           try{
             disableActionButtons(true);
             const from = meta.state || "inbox";
+            const nextId = pickNextId(from, docId);
             const updated = await routeTo(docId, "hold");
             updateCachesAfterRoute(updated, from, "hold");
-            activateTab("hold");
-            await loadState("hold", updated.docId, { force:true });
+            // im Quell-Tab bleiben und nächstes öffnen
+            await loadState(from, nextId, { force:true });
+            toast("Verschoben nach Hold.", "success");
+
             toast("Verschoben nach Hold.", "success");
           } catch(e){
             toast("Verschieben nach Hold fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
@@ -393,13 +450,53 @@
         qs("#btn-back-inbox", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
+            const nextId = pickNextId("hold", docId);
             const updated = await routeTo(docId, "review");
             updateCachesAfterRoute(updated, "hold", "review");
-            activateTab("review");
-            await loadState("review", updated.docId, { force:true });
+            // im Quell-Tab (Hold) bleiben und nächstes öffnen
+            await loadState("hold", nextId, { force:true });
             toast("Zurück in die review verschoben.", "success");
+
           } catch(e){
             toast("Zurückschieben in review fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
+          } finally {
+            disableActionButtons(false);
+          }
+        });
+
+
+        // Inbox/Review/Hold → Trash (Löschen vormerken)
+        qs("#btn-to-trash", detail)?.addEventListener("click", async () => {
+          try{
+            disableActionButtons(true);
+            const from = meta.state || "inbox";
+            const nextId = pickNextId(from, docId);
+            const updated = await routeTo(docId, "trash");
+            updateCachesAfterRoute(updated, from, "trash");
+            // im Quell-Tab bleiben und nächstes öffnen
+            await loadState(from, nextId, { force:true });
+            toast("Zur Löschung vorgemerkt (Trash).", "success");
+          } catch(e){
+            toast("Vormerken fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
+          } finally {
+            disableActionButtons(false);
+          }
+        });
+
+
+
+        // Trash → Inbox (Wiederherstellen)
+        qs("#btn-restore-inbox", detail)?.addEventListener("click", async () => {
+          try{
+            disableActionButtons(true);
+            const nextId = pickNextId("trash", docId);
+            const updated = await routeTo(docId, "inbox");
+            updateCachesAfterRoute(updated, "trash", "inbox");
+            // im Trash-Tab bleiben und nächstes öffnen
+            await loadState("trash", nextId, { force:true });
+            toast("Wiederhergestellt nach Inbox.", "success");
+          } catch(e){
+            toast("Wiederherstellen fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
           } finally {
             disableActionButtons(false);
           }
@@ -439,6 +536,18 @@
                 ${renderInput("doc_date_sic", "date (sic)", eff.doc_date_sic, "YYYY-MM-DD")}
                 ${renderInput("doc_date_parsed", "date (parsed)", eff.doc_date_parsed, "YYYY-MM-DDTHH:mm:ssZ")}
                 ${renderInput("doc_subject", "subject", eff.doc_subject)}
+
+
+                <div class="subsection" style="margin-top:16px;">
+                  <h3 class="section-title">Confidence Overrides (0–1)</h3>
+                  ${renderNumber("conf_doc_id", "doc_id.score", (overrides?.doc_id_score ?? fieldScores.doc_id ?? ""))}
+                  ${renderNumber("conf_date_sic", "doc_date_sic.score", (overrides?.doc_date_sic_score ?? fieldScores.doc_date_sic ?? ""))}
+                  ${renderNumber("conf_subject", "doc_subject.score", (overrides?.doc_subject_score ?? fieldScores.doc_subject ?? ""))}
+                  <p class="hint muted">Leer lassen, um keinen Override zu setzen.</p>
+                </div>
+
+
+
               </div>
 
               <div class="kv" style="margin-top:10px;"><span>docId</span><code>${meta.docId}</code></div>
@@ -457,13 +566,39 @@
             doc_subject: val("#f-doc_subject", detail),
           };
 
-          const patch = {};
-          const currentEff = { ...eff };
-          for (const [k, v] of Object.entries(next)) {
-            if (String(v).trim() !== String(currentEff[k]).trim()) {
-              patch[k] = String(v).trim();
+          
+          
+
+            const patch = {};
+            const currentEff = eff; // aktueller effektiver Stand zum Vergleichen
+            for (const [k, v] of Object.entries(next)) {
+              if (String(v).trim() !== String((currentEff[k] ?? "")).trim()) {
+                patch[k] = String(v).trim();
+              }
             }
-          }
+
+            
+            // Confidence-Overrides einsammeln
+            const getNumOrEmpty = (sel) => {
+              const s = val(sel, detail);
+              if (s === "") return "";             // "" = Override löschen
+              const n = Number(s);
+              if (!isFinite(n)) return "";         // ungültig => wie leer behandeln
+              return Math.max(0, Math.min(1, n));  // clamp 0..1
+            };
+            const conf = {
+              doc_id_score:      getNumOrEmpty("#f-conf_doc_id"),
+              doc_date_sic_score:getNumOrEmpty("#f-conf_date_sic"),
+              doc_subject_score: getNumOrEmpty("#f-conf_subject"),
+            };
+            // immer mitsenden (Server kann dann setzen/entfernen)
+            patch.conf_overrides = conf;
+
+
+
+
+
+
           if (Object.keys(patch).length === 0) {
             return renderDetail(state, docId);
           }
@@ -521,6 +656,18 @@
     return `<div class="kv"><span>${label}</span><span>${valueHtml}</span></div>`;
   }
 
+
+    function formatScore(overrideVal, baseVal){
+      const show = (x) => (typeof x === "number" && isFinite(x)) ? x.toFixed(2) : "—";
+      if (typeof overrideVal === "number" && isFinite(overrideVal)) {
+        return `${show(overrideVal)} <span class="badge warn">(override)</span>`;
+      }
+      return show(baseVal);
+    }
+
+
+
+
   function renderInput(key, label, value, placeholder=""){
     const id = `f-${key}`;
     const safe = escapeHtml(value ?? "");
@@ -532,6 +679,19 @@
       </div>
     `;
   }
+
+
+
+  function renderNumber(key, label, value){
+    const id = `f-${key}`;
+    const v = (value ?? "") === "" ? "" : String(value ?? "");
+    return `<div class="field">
+      <label for="${id}">${label}</label>
+      <input id="${id}" type="number" min="0" max="1" step="0.01" value="${escapeHtml(v)}" />
+    </div>`;
+  }
+
+
 
   // --- selection + controlled loading ---
   function selectItem(state, docId){
@@ -589,6 +749,14 @@
       .map(el => el.dataset.docId)
       .filter(Boolean);
   }
+  function pickNextId(state, currentId){
+    const ids = getDisplayedDocIds(state);
+    const idx = ids.indexOf(currentId);
+    if (idx >= 0 && idx + 1 < ids.length) return ids[idx + 1]; // nächstes
+    if (idx > 0) return ids[idx - 1];                          // sonst vorheriges
+    return null;                                                // sonst nix mehr
+  }
+
   async function runSerial(ids, worker){
     let ok = 0, fail = 0, skipped = 0;
     for (const id of ids){

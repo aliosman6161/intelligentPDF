@@ -1,0 +1,64 @@
+{
+  "docId": "19e5bf62-ffea-4931-8382-04727a9a3488",
+  "state": "trash",
+  "originalFilename": "41176ae8-1b06-48d8-851f-09f90de4c038.pdf",
+  "filePath": "src/server/storage/trash/41176ae8-1b06-48d8-851f-09f90de4c038.pdf",
+  "createdAt": "2025-09-18T20:12:01.998Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T20:12:01.999Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T20:12:05.415Z",
+      "by": "system",
+      "event": "classified"
+    },
+    {
+      "at": "2025-09-18T20:12:05.417Z",
+      "action": "classify",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T20:12:11.329Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "trash"
+    }
+  ],
+  "classification": {
+    "fetchedAt": "2025-09-18T20:12:05.415Z",
+    "apiBase": "http://localhost:8080/api/v1",
+    "requestUuid": "41176ae8-1b06-48d8-851f-09f90de4c038",
+    "result": {
+      "class_id": "2d1ea902-8d96-42f2-a30e-f622b8f5327a",
+      "custom_id": "41176ae8-1b06-48d8-851f-09f90de4c038",
+      "result": {
+        "kind": "LETTER",
+        "doc_id": {
+          "value": "",
+          "score": 0.19
+        },
+        "doc_date_sic": {
+          "value": "2/un[%8)!=",
+          "score": 0.19
+        },
+        "doc_date_parsed": "2024-08-01T00:00:00Z",
+        "doc_subject": {
+          "value": "",
+          "score": 0
+        }
+      }
+    }
+  },
+  "trash": {
+    "markedAt": "2025-09-18T20:12:11.330Z",
+    "deleteAfter": "2025-10-02T20:12:11.330Z",
+    "markedBy": "system"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "docId": "ce38d9d7-478b-4aa7-8449-b89f635f3c4e",
+  "state": "trash",
+  "originalFilename": "ccbe5a9b-b687-4731-8365-b1a47d85f034.pdf",
+  "filePath": "src/server/storage/trash/ccbe5a9b-b687-4731-8365-b1a47d85f034.pdf",
+  "createdAt": "2025-09-18T19:19:55.979Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T19:19:55.979Z",
+      "by": "system",
+      "event": "moved",
+      "from": "scanner",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T19:27:10.524Z",
+      "by": "system",
+      "event": "classified"
+    },
+    {
+      "at": "2025-09-18T19:27:10.526Z",
+      "action": "classify",
+      "by": "admin"
+    },
+    {
+      "at": "2025-09-18T19:27:16.873Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "trash"
+    }
+  ],
+  "classification": {
+    "fetchedAt": "2025-09-18T19:27:10.524Z",
+    "apiBase": "http://localhost:8080/api/v1",
+    "requestUuid": "ccbe5a9b-b687-4731-8365-b1a47d85f034",
+    "result": {
+      "class_id": "6e481698-86ac-4efb-bd3f-15d8504ae987",
+      "custom_id": "ccbe5a9b-b687-4731-8365-b1a47d85f034",
+      "result": {
+        "kind": "LETTER",
+        "doc_id": {
+          "value": "bLOGse en",
+          "score": 0.59
+        },
+        "doc_date_sic": {
+          "value": "202,-12-22",
+          "score": 0.59
+        },
+        "doc_date_parsed": "2024-12-22T00:00:00Z",
+        "doc_subject": {
+          "value": "\\inl*dung zum ;lterna(.nd",
+          "score": 0.7
+        }
+      }
+    }
+  },
+  "trash": {
+    "markedAt": "2025-09-18T19:27:16.873Z",
+    "deleteAfter": "2025-10-02T19:27:16.873Z",
+    "markedBy": "system"
+  }
+}

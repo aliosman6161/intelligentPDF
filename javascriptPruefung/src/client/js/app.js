@@ -40,7 +40,8 @@
 
   const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
   const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
-  const states = ["inbox","review","hold","processed"];
+  const states = ["inbox","review","hold","processed","trash"];
+
 
 
   const ui = {
@@ -63,18 +64,30 @@
     },
     processed:{
       list: qs("#processed-list"), empty: qs("#processed-empty"), detail: qs("#processed-detail"), refresh: qs("#refresh-processed"), search: qs("#search-processed")
+    },
+    trash: {
+      panel:   qs("#panel-trash"),
+      list:    qs("#trash-list"),
+      empty:   qs("#trash-empty"),
+      detail:  qs("#trash-detail"),
+      refresh: qs("#refresh-trash"),
+      search:  qs("#search-trash"),
     }
+
   };
 
 
   // In-Memory Cache
   const cache = {
-    inbox:    { items: [], loaded: false },
-    review:   { items: [], loaded: false },
-    hold:     { items: [], loaded: false },
-    processed:{ items: [], loaded: false },
+    inbox:     { loaded:false, items:[] },
+    review:    { loaded:false, items:[] },
+    hold:      { loaded:false, items:[] },
+    processed: { loaded:false, items:[] },
+    trash:     { loaded:false, items:[] },
   };
-  const selected = { inbox: null, review: null, hold: null, processed: null };
+
+  const selected = { inbox:null, review:null, hold:null, processed:null, trash:null };
+
 
 
   // --- helpers ---
@@ -266,19 +279,26 @@
             <button id="btn-to-review" class="icon-btn small">→ Review</button>
             <button id="btn-to-hold" class="icon-btn small">→ Hold</button>
             <button id="btn-to-processed" class="icon-btn small primary">→ Processed</button>
+            <button id="btn-to-trash" class="icon-btn small danger">→ Löschen vormerken</button>
             ${autoRouteBtn}
             ${editBtn}
           `;
         } else if (meta.state === "review") {
           rightButtons = `
-            ${classifyBtn}
+            <button id="btn-to-hold" class="icon-btn small">→ Hold</button>
             <button id="btn-to-processed" class="icon-btn small primary">→ Processed</button>
+            <button id="btn-to-trash" class="icon-btn small danger">→ Löschen vormerken</button>
             ${editBtn}
           `;
         } else if (meta.state === "hold") {
           rightButtons = `
-            ${classifyBtn}
+            <button id="btn-to-trash" class="icon-btn small danger">→ Löschen vormerken</button>
             <button id="btn-back-inbox" class="icon-btn small">← Zurück in Review</button>
+          `;
+        } else if (meta.state === "trash") {
+          rightButtons = `
+            <button id="btn-restore-inbox" class="icon-btn small">← Wiederherstellen (Inbox)</button>
+            <!-- „Endgültig löschen“ kommt im nächsten Schritt mit Server-Endpoint -->
           `;
         } else {
           rightButtons = ``; // processed
@@ -302,6 +322,8 @@
               <div class="kv"><span>Status</span><b>${meta.state}</b> ${scoreBadge}</div>
               <div class="kv"><span>Datei</span><span title="${meta.originalFilename || ""}">${meta.originalFilename || "—"}</span></div>
               <div class="kv"><span>Eingang</span><span>${fmtDate(meta.createdAt)}</span></div>
+              ${meta.state === "trash" && meta.trash?.deleteAfter ? `<div class="kv"><span>Geplante Löschung</span><span>${fmtDate(meta.trash.deleteAfter)}</span></div>` : ``}
+
 
               <div class="section-title-row">
                 <h3 class="section-title">Werte (gültig)</h3>
@@ -338,10 +360,12 @@
         qs("#btn-to-review", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
+            const nextId = pickNextId("inbox", docId);
             const updated = await routeTo(docId, "review");
             updateCachesAfterRoute(updated, "inbox", "review");
-            activateTab("review");
-            await loadState("review", updated.docId, { force:true });
+            // im Quell-Tab (Inbox) bleiben und nächstes öffnen
+            await loadState("inbox", nextId, { force:true });
+
           } catch(e){
             alert("Verschieben nach Review fehlgeschlagen: " + String(e?.message || e));
           } finally {
@@ -355,10 +379,12 @@
           try{
             disableActionButtons(true);
             const from = meta.state || "inbox";
+            const nextId = pickNextId(from, docId);
             const updated = await routeTo(docId, "processed");
             updateCachesAfterRoute(updated, from, "processed");
-            activateTab("processed");
-            await loadState("processed", updated.docId, { force:true });
+            // im Quell-Tab bleiben und nächstes öffnen
+            await loadState(from, nextId, { force:true });
+
           } catch(e){
             alert("Verschieben nach Processed fehlgeschlagen: " + String(e?.message || e));
           } finally {
@@ -383,11 +409,13 @@
         qs("#btn-autoroute-one", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
+            const nextId = pickNextId("inbox", docId);
             await autoRouteOne(docId, 0.7);
             const updated = await fetchMeta(docId);
             updateCachesAfterRoute(updated, "inbox", updated.state);
-            activateTab(updated.state);
-            await loadState(updated.state, updated.docId, { force:true });
+            // in Inbox bleiben und nächstes öffnen
+            await loadState("inbox", nextId, { force:true });
+
           } catch(e){
             alert("Auto-Routen fehlgeschlagen: " + String(e?.message || e));
           } finally {
@@ -403,10 +431,13 @@
           try{
             disableActionButtons(true);
             const from = meta.state || "inbox";
+            const nextId = pickNextId(from, docId);
             const updated = await routeTo(docId, "hold");
             updateCachesAfterRoute(updated, from, "hold");
-            activateTab("hold");
-            await loadState("hold", updated.docId, { force:true });
+            // im Quell-Tab bleiben und nächstes öffnen
+            await loadState(from, nextId, { force:true });
+            toast("Verschoben nach Hold.", "success");
+
             toast("Verschoben nach Hold.", "success");
           } catch(e){
             toast("Verschieben nach Hold fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
@@ -419,13 +450,53 @@
         qs("#btn-back-inbox", detail)?.addEventListener("click", async () => {
           try{
             disableActionButtons(true);
+            const nextId = pickNextId("hold", docId);
             const updated = await routeTo(docId, "review");
             updateCachesAfterRoute(updated, "hold", "review");
-            activateTab("review");
-            await loadState("review", updated.docId, { force:true });
+            // im Quell-Tab (Hold) bleiben und nächstes öffnen
+            await loadState("hold", nextId, { force:true });
             toast("Zurück in die review verschoben.", "success");
+
           } catch(e){
             toast("Zurückschieben in review fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
+          } finally {
+            disableActionButtons(false);
+          }
+        });
+
+
+        // Inbox/Review/Hold → Trash (Löschen vormerken)
+        qs("#btn-to-trash", detail)?.addEventListener("click", async () => {
+          try{
+            disableActionButtons(true);
+            const from = meta.state || "inbox";
+            const nextId = pickNextId(from, docId);
+            const updated = await routeTo(docId, "trash");
+            updateCachesAfterRoute(updated, from, "trash");
+            // im Quell-Tab bleiben und nächstes öffnen
+            await loadState(from, nextId, { force:true });
+            toast("Zur Löschung vorgemerkt (Trash).", "success");
+          } catch(e){
+            toast("Vormerken fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
+          } finally {
+            disableActionButtons(false);
+          }
+        });
+
+
+
+        // Trash → Inbox (Wiederherstellen)
+        qs("#btn-restore-inbox", detail)?.addEventListener("click", async () => {
+          try{
+            disableActionButtons(true);
+            const nextId = pickNextId("trash", docId);
+            const updated = await routeTo(docId, "inbox");
+            updateCachesAfterRoute(updated, "trash", "inbox");
+            // im Trash-Tab bleiben und nächstes öffnen
+            await loadState("trash", nextId, { force:true });
+            toast("Wiederhergestellt nach Inbox.", "success");
+          } catch(e){
+            toast("Wiederherstellen fehlgeschlagen: " + String(e?.message || e), "error", { timeout: 3500 });
           } finally {
             disableActionButtons(false);
           }
@@ -678,6 +749,14 @@
       .map(el => el.dataset.docId)
       .filter(Boolean);
   }
+  function pickNextId(state, currentId){
+    const ids = getDisplayedDocIds(state);
+    const idx = ids.indexOf(currentId);
+    if (idx >= 0 && idx + 1 < ids.length) return ids[idx + 1]; // nächstes
+    if (idx > 0) return ids[idx - 1];                          // sonst vorheriges
+    return null;                                                // sonst nix mehr
+  }
+
   async function runSerial(ids, worker){
     let ok = 0, fail = 0, skipped = 0;
     for (const id of ids){

@@ -1,0 +1,24 @@
+{
+  "docId": "3d056904-dcfd-4fc6-bf42-a183a8e799fe",
+  "state": "hold",
+  "originalFilename": "Anwendung aus PDF erstellen.pdf",
+  "filePath": "storage/hold/Anwendung aus PDF erstellen.pdf",
+  "createdAt": "2025-09-18T18:42:49.043Z",
+  "createdBy": "system",
+  "history": [
+    {
+      "at": "2025-09-18T18:42:49.043Z",
+      "by": "system",
+      "event": "moved",
+      "from": "upload",
+      "to": "inbox"
+    },
+    {
+      "at": "2025-09-18T18:42:53.097Z",
+      "by": "system",
+      "event": "moved",
+      "from": "inbox",
+      "to": "hold"
+    }
+  ]
+}

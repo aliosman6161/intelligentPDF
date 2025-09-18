@@ -9,7 +9,7 @@
 <body>
   <header class="app-header">
     <h1>Intelligenter Posteingang</h1>
-    <p class="subtitle">Scanner → Inbox → Review/Processed</p>
+    <p class="subtitle">Scanner → Inbox → Review/Hold/Processed/Trash</p>
     <div id="userbox" style="margin-left:auto; display:flex; align-items:center; gap:10px;">
       <span id="current-user" title="aktueller Benutzer"></span>
       <button id="logout-btn" class="icon-btn">Abmelden</button>
@@ -21,7 +21,9 @@
     <button class="tab" id="tab-review" role="tab" aria-selected="false" aria-controls="panel-review">Review</button>
     <button class="tab" id="tab-hold" role="tab" aria-selected="false" aria-controls="panel-hold">Hold</button>
     <button class="tab" id="tab-processed" role="tab" aria-selected="false" aria-controls="panel-processed">Processed</button>
+    <button class="tab" id="tab-trash" role="tab" aria-selected="false" aria-controls="panel-trash">Trash</button>
   </nav>
+
 
   <main class="panels">
     <!-- INBOX -->
@@ -68,7 +70,6 @@
 
 
     <!-- HOLD -->
-
       <section id="panel-hold" role="tabpanel" hidden>
         <div class="split">
           <aside class="sidebar">
@@ -108,6 +109,34 @@
         </section>
       </div>
     </section>
+
+
+
+
+
+        <!-- TRASH -->
+    <section id="panel-trash" role="tabpanel" hidden>
+      <div class="split">
+        <aside class="sidebar">
+          <div class="toolbar">
+            <button id="refresh-trash" class="icon-btn">Aktualisieren</button>
+          </div>
+          <div class="toolbar">
+            <input id="search-trash" class="search" placeholder="Suchen…" />
+          </div>
+          <div id="trash-list" class="list"></div>
+          <div id="trash-empty" class="empty" hidden>Keine Dokumente.</div>
+        </aside>
+        <section class="detail" id="trash-detail">
+          <div class="placeholder"><h2>Trash</h2><p>Wähle links ein Dokument.</p></div>
+        </section>
+      </div>
+    </section>
+
+
+
+
+
   </main>
 
   <script src="./js/app.js" type="module"></script>

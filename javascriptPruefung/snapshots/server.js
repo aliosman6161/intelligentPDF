@@ -24,6 +24,13 @@ const INBOX_DIR     = process.env.INBOX_DIR     || path.resolve(__dirname, "../.
 const PROCESSED_DIR = process.env.PROCESSED_DIR || path.resolve(__dirname, "../../storage/processed");
 const REVIEW_DIR    = process.env.REVIEW_DIR    || path.resolve(__dirname, "../../storage/review");
 const HOLD_DIR      = process.env.HOLD_DIR      || path.resolve(__dirname, "../../storage/hold");
+const TRASH_DIR     = process.env.TRASH_DIR     || path.resolve(__dirname, "././storage/trash");
+const TRASH_RETENTION_DAYS = Number(process.env.TRASH_RETENTION_DAYS || 14);
+
+
+
+
+
 
 const PORT          = Number(process.env.PORT || 3001);
 const USER_NAME     = process.env.USER_NAME || "system";
@@ -60,16 +67,24 @@ function resolveUser(req) {
 
 
 // b) min-Aggregat aus Klassifizierungs-Scores bestimmen (wie im Frontend)
-function getMinConfidence(meta) {
-  const r = meta?.classification?.result?.result || meta?.classification?.result || null;
-  if (!r) return null;
-  const scores = [];
-  if (r?.doc_id?.score != null)        scores.push(Number(r.doc_id.score));
-  if (r?.doc_date_sic?.score != null)  scores.push(Number(r.doc_date_sic.score));
-  if (r?.doc_subject?.score != null)   scores.push(Number(r.doc_subject.score));
-  if (!scores.length) return null;
-  return scores.reduce((m, v) => Math.min(m, v), 1);
-}
+  function getMinConfidence(meta) {
+    const r = meta?.classification?.result?.result || meta?.classification?.result || null;
+    if (!r) return null;
+
+    const o = meta?.corrections?.conf_overrides || {};
+    const sId   = (typeof o.doc_id_score === "number")       ? o.doc_id_score       : r?.doc_id?.score;
+    const sDate = (typeof o.doc_date_sic_score === "number") ? o.doc_date_sic_score : r?.doc_date_sic?.score;
+    const sSubj = (typeof o.doc_subject_score === "number")  ? o.doc_subject_score  : r?.doc_subject?.score;
+
+    const scores = [];
+    if (typeof sId   === "number") scores.push(Number(sId));
+    if (typeof sDate === "number") scores.push(Number(sDate));
+    if (typeof sSubj === "number") scores.push(Number(sSubj));
+
+    if (!scores.length) return null;
+    return scores.reduce((m, v) => Math.min(m, v), 1);
+  }
+
 
 // c) classification_mode für Processed setzen
 function computeClassificationMode(meta, { isAutoRoute = false, threshold = 0.7 } = {}) {
@@ -256,9 +271,9 @@ async function classifyOne(meta) {
 
 async function autoRouteOne(meta, threshold = 0.7) {
   if (!meta.classification) throw new Error("not_classified");
-  const inner = getInnerResult(meta.classification);
-  const min = minConfidenceFromInner(inner);
+  const min = getMinConfidence(meta); // nutzt KI-Scores ODER Overrides
   if (min == null) throw new Error("no_scores");
+
 
   const fromState = meta.state;
   const target = min >= threshold ? "processed" : "review";
@@ -368,6 +383,11 @@ export function startServer() {
         const body = await readJsonBody(req).catch(() => null);
         if (!body) return sendJson(res, 400, { error: "invalid_json_body" });
 
+
+        
+
+
+
         const allowed = ["kind", "doc_id", "doc_date_sic", "doc_date_parsed", "doc_subject"];
         const patch = {};
         for (const k of allowed) {
@@ -376,6 +396,35 @@ export function startServer() {
         meta.corrections = { ...(meta.corrections || {}), ...patch };
         meta.correctedAt = new Date().toISOString();
         meta.correctedBy = USER_NAME;
+
+        // ⬇️ NEU: Confidence-Overrides (0..1; "" = löschen)
+        if (body && typeof body.conf_overrides === "object") {
+          const co = body.conf_overrides || {};
+          const keys = ["doc_id_score","doc_date_sic_score","doc_subject_score"];
+
+          // Zielstruktur sicherstellen
+          const target = { ...(meta.corrections.conf_overrides || {}) };
+
+          for (const k of keys) {
+            const v = co[k];
+            if (v === "" || v === null || typeof v === "undefined") {
+              delete target[k];                 // leeres Feld => Override entfernen
+            } else {
+              const n = Number(v);
+              if (isFinite(n) && n >= 0 && n <= 1) target[k] = n; // clampen macht schon das Frontend
+            }
+          }
+          if (Object.keys(target).length === 0) {
+            if (meta.corrections.conf_overrides) delete meta.corrections.conf_overrides;
+          } else {
+            meta.corrections.conf_overrides = target;
+          }
+        }
+
+
+
+
+
 
         meta.history = Array.isArray(meta.history) ? meta.history : [];
         meta.history.push({ at: new Date().toISOString(), by: USER_NAME, event: "corrections_saved" });
@@ -409,9 +458,10 @@ export function startServer() {
         if (!body || !body.to) return sendJson(res, 400, { error: "bad_request", message: "body.to required" });
 
         const to = String(body.to).toLowerCase();
-        if (!["processed","review","hold","inbox"].includes(to)) {
-          return sendJson(res, 400, { error: "bad_request", message: "to must be 'processed', 'review', 'hold' or 'inbox'" });
+        if (!["processed","review","hold","inbox","trash"].includes(to)) {
+          return sendJson(res, 400, { error: "bad_request", message: "to must be 'processed','review','hold','inbox' or 'trash'" });
         }
+
 
 
         const relPdf = meta.filePath;
@@ -422,7 +472,9 @@ export function startServer() {
         const dstDir = to === "processed" ? PROCESSED_DIR
               : to === "review"   ? REVIEW_DIR
               : to === "hold"     ? HOLD_DIR
-              :                      INBOX_DIR; // fallback: inbox
+              : to === "trash"    ? TRASH_DIR
+              :                      INBOX_DIR;
+
         const movedAbs = await moveFile(absPdf, dstDir);
         const newRel  = relFromRoot(movedAbs);
 
@@ -431,6 +483,28 @@ export function startServer() {
         meta.filePath = newRel;
         meta.history = Array.isArray(meta.history) ? meta.history : [];
         meta.history.push({ at: new Date().toISOString(), by: USER_NAME, event: "moved", from: fromState, to });
+
+
+
+
+        // Trash-Metadaten pflegen
+        if (to === "trash") {
+          const now = new Date();
+          const delAt = new Date(now.getTime() + TRASH_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+          meta.trash = {
+            markedAt: now.toISOString(),
+            deleteAfter: delAt.toISOString(),
+            markedBy: USER_NAME
+          };
+        } else if (fromState === "trash" && to !== "trash") {
+          // Wiederhergestellt: Trash-Infos entfernen
+          if (meta.trash) delete meta.trash;
+        }
+
+
+
+
+
 
 
         await writeMetaById(docId, meta);
