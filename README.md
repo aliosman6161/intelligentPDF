@@ -18,14 +18,14 @@ $ git clone https://github.com/aliosman6161/intelligentPDF.git
 
 Navigieren sie zu den Ordner und öffnen sie den die login.html in einem Browser ihrer Wahl.
 ```
-$ cd intelligentPDF/src/client
+$ cd intelligentPDF/javaScriptPruefing/src/client
 $ firefox login.html
 ```
 
 Starte nun den Docker und den den indes.js über node in seperaten Terminal
 
 ```
-$ node intelligentPDF/src/server/index.js
+$ node intelligentPDF/javaScriptPruefung/src/server/index.js
 $ cd intelligentPDF/pdfclassifier-api-mock-1_1_0
 $ docker-compose up --build
 ```
@@ -41,10 +41,10 @@ Folgende Befehle sind über die Windows PowerShell auszuführen
 Laden sie Docker als Applikation auf ihren Windows Rechner
 ```
 git clone https://github.com/aliosman6161/intelligentPDF.git
-cd C:\intelligentPDF\src\client
+cd C:\intelligentPDF\javaScriptPruefung\src\client
 -> starten sie die index.html über den Browser ihrer Wahl
 
-cd C:\intelligentPDF\src\server\
+cd C:\intelligentPDF\javaScriptPruefung\src\server\
 node index.js
 
 cd C:\intelligentPDF\pdfclassifier-api-mock-1_1_0
