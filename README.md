@@ -8,7 +8,7 @@ Dieses Projekt ist ein „intelligenter Posteingang“ für Dokumente. Eingehend
 
 
 ## Ausführen des Programms
-### Linux / Windows
+### Linux 
 **Diese Beschreibung ist anzuwenden in einem Bash-Terminal**
 
 Laden sie sich das Git-Repo herunter
@@ -30,3 +30,25 @@ $ cd intelligentPDF/pdfclassifier-api-mock-1_1_0
 $ docker-compose up --build
 ```
 
+**Nun können sie sich über ihren Browser einloggen. Standard sind die Anmeldedaten: User->admin Passwort->admin**
+
+### Windows
+
+Jede Interaktion und Programmstart findet über die Windows-PowerShell statt.
+Folgende Befehle sind über die Windows PowerShell auszuführen
+
+
+Laden sie Docker als Applikation auf ihren Windows Rechner
+```
+git clone https://github.com/aliosman6161/intelligentPDF.git
+cd C:\intelligentPDF\src\client
+-> starten sie die index.html über den Browser ihrer Wahl
+
+cd C:\intelligentPDF\src\server\
+node index.js
+
+cd C:\intelligentPDF\pdfclassifier-api-mock-1_1_0
+docker-compose up --build
+```
+
+**Nun können sie sich über ihren Browser einloggen. Standard sind die Anmeldedaten: User->admin Passwort->admin**
