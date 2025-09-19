@@ -42,7 +42,7 @@ Laden sie Docker als Applikation auf ihren Windows Rechner
 ```
 git clone https://github.com/aliosman6161/intelligentPDF.git
 cd C:\intelligentPDF\javaScriptPruefung\src\client
--> starten sie die index.html über den Browser ihrer Wahl
+-> starten sie die login.html über den Browser ihrer Wahl
 
 cd C:\intelligentPDF\javaScriptPruefung\src\server\
 node index.js
